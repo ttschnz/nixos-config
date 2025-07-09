@@ -1,0 +1,34 @@
+#!/usr/bin/expect -f
+
+# Set variables here
+set timeout -1
+set vpn_server "vpn.epfl.ch"
+set username "ttschanz"
+set password [lindex $argv 0]
+set twofa_code [lindex $argv 1]
+
+
+# Launch openconnect
+spawn openconnect -i vpn0 --server=$vpn_server --user=$username --useragent=AnyConnect
+
+# Wait for password prompt and send password
+expect {
+    -re "Password:" {
+        send "$password\r"
+        exp_continue
+    }
+    -re "Response:" {
+        send "$twofa_code\r"
+        exp_continue
+    }
+    -re "Login failed." {
+        exit
+    }
+    eof {
+        # connection ended, exit script
+        exit
+    }
+}
+
+# Keep script running to allow openconnect session to stay active
+interact

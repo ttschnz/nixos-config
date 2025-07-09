@@ -1,0 +1,8 @@
+creation_rules:
+- path_regex: "secrets/secrets.yaml"
+  pgp: 
+    - 'B7D28660D542AF38E5DD5F4A5F1BFC88D306AB69'
+  age:
+    - age129vx2q0tgzypdj5kgthz8tuzaw92g6478faf7s8ju779m9n3lptqzju8z2
+    
+
