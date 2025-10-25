@@ -15,11 +15,8 @@ while IFS= read -r line; do
     path="${BASH_REMATCH[1]}"
     value=$(printf '%s' "$yaml_input" | yq -r ".${path//\//.}" 2>/dev/null)
     # Escape newlines and quotes for substitution
-    value_escaped=$(printf '%s' "$value" | sed -e ':a' -e 'N' -e '$!ba' -e 's/\n/\\n/g' -e 's/"/\\"/g')
-    
+    value_escaped=$(printf '%s' "$value" | sed -e ':a' -e 'N' -e '$!ba' -e 's/\n/\\n/g' -e 's/"/\\"/g')    
     line=$(echo "$line" | sed "s|null|\"${value_escaped}\"|")
-
-    echo $value_escaped  \ 
   fi
   echo "$line" >> "$tmp_out"
 done < "$target_file"

@@ -27,8 +27,14 @@
     "syncthing/web_gui_password" = { value = null; };
     "git/name" = { value = null; };
     "git/email" = { value = null; };
-    "vpn_credentials" = { };
-    "2fa_credentials" = { };
+    "vpn_credentials" = { 
+      owner = config.users.users.tim.name;
+      group = config.users.users.tim.group;
+    };
+    "2fa_credentials" = { 
+      owner = config.users.users.tim.name;
+      group = config.users.users.tim.group;
+    };
     "printer_epfl_printerserver" = { value = null; };
   };
 }
