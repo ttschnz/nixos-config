@@ -27,7 +27,6 @@
   gcc
   avrdude
   go
-  go-2fa
   (python312.withPackages (p: with p; [
     pypdf tkinter pip sympy meson cmake requests torpy numpy scipy
     pygobject3 pycairo flask werkzeug waitress websockets bitarray

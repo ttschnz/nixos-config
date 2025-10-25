@@ -34,6 +34,7 @@
     "2fa_credentials" = { 
       owner = config.users.users.tim.name;
       group = config.users.users.tim.group;
+      mode = "400";
     };
     "printer_epfl_printerserver" = { value = null; };
   };

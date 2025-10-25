@@ -1,5 +1,7 @@
 { config, pkgs, ... }:
-
+let
+  go2faModule = import ./packages/go-2fa.nix { inherit config pkgs; };
+in
 {
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
@@ -89,5 +91,8 @@
     import ./packages/misc.nix { inherit pkgs; } ++ 
 
     ## VSCode & Extensions
-    import ./packages/vscode.nix { inherit pkgs; };
+    import ./packages/vscode.nix { inherit pkgs; } ++
+    
+    # Modules
+    go2faModule.packages;
 }
