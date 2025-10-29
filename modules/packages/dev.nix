@@ -31,7 +31,8 @@
     pypdf tkinter pip sympy meson cmake requests torpy numpy scipy
     pygobject3 pycairo flask werkzeug waitress websockets bitarray
     ipykernel notebook jupyter seaborn plotly torch torchvision tqdm docling
-    yfinance hf-xet scikit-learn
+    yfinance hf-xet scikit-learn 
+    (callPackage python-packages/otter-grader/default.nix { })
     (callPackage python-packages/teaching-optimization/default.nix { })
   ]))
   jupyter-all
