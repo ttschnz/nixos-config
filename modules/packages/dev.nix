@@ -42,7 +42,7 @@
   elmPackages.elm
   ncurses
   (octaveFull.withPackages (p: with p; [ 
-    control symbolic
+    control symbolic signal
     ]))
   zed-editor
   expect
