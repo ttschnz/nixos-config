@@ -47,4 +47,6 @@
   zed-editor
   expect
   platformio
+  socat
+  simulide_1_1_0
 ]
