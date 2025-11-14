@@ -46,4 +46,5 @@
     ]))
   zed-editor
   expect
+  platformio
 ]

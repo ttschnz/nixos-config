@@ -19,6 +19,13 @@
         elmtooling.elm-ls-vscode
         # vue.volar
         ms-toolsai.jupyter
+
+        # arduino development
+        platformio.platformio-vscode-ide
+        ms-vscode.cpptools
+        hbenl.vscode-test-explorer
+        ms-vscode.test-adapter-converter
+
       ];
     })
 ]
