@@ -52,4 +52,6 @@
 
   cargo-generate
   ravedude
+  esp-generate
+  espup
 ]
