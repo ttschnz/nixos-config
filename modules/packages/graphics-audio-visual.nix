@@ -18,4 +18,5 @@
   gobject-introspection
   libinput
   spotify
+  ffmpeg
 ]
