@@ -29,7 +29,6 @@
 
           ./modules/packages.nix
           ./modules/packages/threema.nix
-          ./modules/packages/bottles.nix
           ./modules/packages/audiveris.nix
 
           ./modules/services.nix
