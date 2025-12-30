@@ -53,7 +53,7 @@
       };
       "Images" = {
         path = "/home/tim/data/Privat/Fotos";
-        devices = [ "pixel6a" ];
+        devices = [ "pixel6a" "samsungtab" ];
       };
       "Documents" = {
         path = "/home/tim/data/Privat/Dokumente";
