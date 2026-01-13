@@ -1,6 +1,24 @@
 { config, pkgs, lib, ... }:
 
 let
+  runtimeLibs = with pkgs; [
+    fontconfig
+    freetype
+    alsa-lib
+
+    xorg.libX11
+    xorg.libXcursor
+    xorg.libXrandr
+    xorg.libXinerama
+    xorg.libXi
+    xorg.libXrender
+    xorg.libxcb
+
+    mesa
+    libGL
+    wayland
+  ];
+
   neuralnote = pkgs.stdenvNoCC.mkDerivation {
     pname = "neuralnote-standalone";
     version = "1.1.0";
@@ -12,25 +30,10 @@ let
 
     nativeBuildInputs = [
       pkgs.autoPatchelfHook
+      pkgs.makeWrapper
     ];
 
-    buildInputs = with pkgs; [
-      fontconfig
-      freetype
-      alsa-lib
-
-      xorg.libX11
-      xorg.libXcursor
-      xorg.libXrandr
-      xorg.libXinerama
-      xorg.libXi
-      xorg.libXrender
-      xorg.libxcb
-
-      mesa
-      libGL
-      wayland
-    ];
+    buildInputs = runtimeLibs;
 
     installPhase = ''
       mkdir -p $out/opt/neuralnote
@@ -38,7 +41,10 @@ let
       chmod +x $out/opt/neuralnote/NeuralNote
 
       mkdir -p $out/bin
-      ln -s $out/opt/neuralnote/NeuralNote $out/bin/neuralnote
+
+      # Create wrapped launcher with runtime lib path
+      makeWrapper $out/opt/neuralnote/NeuralNote $out/bin/neuralnote \
+        --set LD_LIBRARY_PATH ${pkgs.lib.makeLibraryPath runtimeLibs}
     '';
 
     desktopItems = [
@@ -50,7 +56,6 @@ let
       })
     ];
   };
-in
-{
+in {
   environment.systemPackages = [ neuralnote ];
 }
