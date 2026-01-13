@@ -18,6 +18,11 @@ let
     libGL
     wayland
   ];
+  
+  icon = pkgs.fetchzip {
+    url = "https://github.com/DamRsn/NeuralNote/archive/refs/tags/v1.1.0.zip";
+    sha256 = "sha256-hsn0aCZNP+3mrTKDGQ2x+ZZI7ITpxtWtWWlhyOlk1a4==";
+  };
 
   neuralnote = pkgs.stdenvNoCC.mkDerivation {
     pname = "neuralnote-standalone";
@@ -45,6 +50,12 @@ let
       # Create wrapped launcher with runtime lib path
       makeWrapper $out/opt/neuralnote/NeuralNote $out/bin/neuralnote \
         --set LD_LIBRARY_PATH ${pkgs.lib.makeLibraryPath runtimeLibs}
+
+      # install icon (256x256 is fine; GNOME will scale)
+      mkdir -p $out/share/icons/hicolor/256x256/apps
+      cp ${icon}/NeuralNote/Assets/logo.png \
+         $out/share/icons/hicolor/256x256/apps/neuralnote.png
+
 
       # desktop entry
       mkdir -p $out/share/applications
