@@ -45,7 +45,17 @@ let
       # Create wrapped launcher with runtime lib path
       makeWrapper $out/opt/neuralnote/NeuralNote $out/bin/neuralnote \
         --set LD_LIBRARY_PATH ${pkgs.lib.makeLibraryPath runtimeLibs}
-    '';
+
+      # desktop entry
+      mkdir -p $out/share/applications
+      cat > $out/share/applications/neuralnote.desktop <<EOF
+      [Desktop Entry]
+      Name=NeuralNote
+      Exec=neuralnote
+      Type=Application
+      Categories=Audio;Music;
+      EOF
+      '';
 
     desktopItems = [
       (pkgs.makeDesktopItem {
