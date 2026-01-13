@@ -34,6 +34,7 @@
     yfinance hf-xet scikit-learn datasets peft xgboost
     (callPackage python-packages/otter-grader/default.nix { })
     (callPackage python-packages/teaching-optimization/default.nix { })
+    (callPackage python-packages/basic-pitch/default.nix { })
   ]))
   jupyter-all
   nodejs_22
