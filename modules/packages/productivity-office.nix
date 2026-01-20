@@ -16,4 +16,5 @@
   moon
   sql-studio
   sqlite
+  (callPackage ./n-link.nix {})
 ]

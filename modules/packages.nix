@@ -10,6 +10,7 @@ in
     # "mailspring-1.12.0"
     # "libav-12.3"
     "electron-25.9.0"
+    "openssl-1.1.1w" # required by n-link
   ];
 
   # RealtimeKit system service
