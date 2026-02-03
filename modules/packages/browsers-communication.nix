@@ -3,7 +3,6 @@
   vdhcoapp
   thunderbird
   firefox
-  whatsie
   telegram-desktop
   beeper
   zoom-us

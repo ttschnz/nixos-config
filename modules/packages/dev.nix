@@ -27,19 +27,18 @@
   gcc
   avrdude
   go
-  (python312.withPackages (p: with p; [
+  (python313.withPackages (p: with p; [
     pypdf tkinter pip sympy meson cmake requests torpy numpy scipy
     pygobject3 pycairo flask werkzeug waitress websockets bitarray
-    ipykernel notebook jupyter seaborn plotly torch torchvision tqdm docling
+    ipykernel notebook jupyter seaborn plotly torch torchvision tqdm #docling
     yfinance hf-xet scikit-learn datasets peft xgboost
     (callPackage python-packages/otter-grader/default.nix { })
     (callPackage python-packages/teaching-optimization/default.nix { })
-    (callPackage python-packages/basic-pitch/default.nix { })
   ]))
   jupyter-all
   nodejs_22
-  nodePackages.webpack-cli
-  nodePackages.webpack
+  # nodePackages.webpack-cli
+  # nodePackages.webpack
   elmPackages.elm
   ncurses
   (octaveFull.withPackages (p: with p; [ 

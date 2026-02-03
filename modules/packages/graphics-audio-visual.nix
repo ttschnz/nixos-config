@@ -1,6 +1,6 @@
 { pkgs, ... }: with pkgs; [
   gimp
-  libsForQt5.kdenlive # video editor
+  kdePackages.kdenlive # video editor
   mediainfo
   vlc
   clapper

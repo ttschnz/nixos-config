@@ -5,7 +5,7 @@
   tree
   fzf # fuzzy-find
   atuin # shell history
-  du-dust # du
+  dust # du
   btop # task-manager
   bat # cat with git integration
   tldr # shorter man-pages

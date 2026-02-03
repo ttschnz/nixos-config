@@ -27,7 +27,7 @@ appimageTools.wrapType2 {
 
   extraPkgs = pkgs: with pkgs; [
     openssl_1_1
-    webkitgtk_4_0
+    webkitgtk_4_1
   ];
 
   extraInstallCommands = ''

@@ -2,12 +2,12 @@
 
 {
     
+  # Enable the GNOME Desktop Environment.
+  services.displayManager.gdm.enable = true;
+  services.desktopManager.gnome.enable = true;
   services.xserver = {
     # Enable the X11 windowing system.
     enable = true;
-    # Enable the GNOME Desktop Environment.
-    displayManager.gdm.enable = true;
-    desktopManager.gnome.enable = true;
     # new for nix 24:
     xkb = {
       layout = "ch";
