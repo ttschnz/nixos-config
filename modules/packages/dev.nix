@@ -23,7 +23,7 @@
   pkg-config
   libnotify
   nix-tree
-  wasmer
+  # wasmer # currently broken
   gcc
   avrdude
   go
