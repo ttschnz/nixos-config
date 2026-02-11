@@ -48,7 +48,7 @@
 
     settings.folders = {
       "Cloud" = {
-        path = "/home/tim/data/Cloud";
+        path = "/home/tim/data/Ausbildung/Studium/Fächer";
         devices = [ "pixel6a" "samsungtab" ];
       };
       "Images" = {
