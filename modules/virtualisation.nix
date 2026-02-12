@@ -2,7 +2,7 @@
 
 {
 
-  #virtualisation.waydroid.enable = true;
+  virtualisation.waydroid.enable = true;
 
   # Set up virtualisation
   virtualisation.libvirtd = {
