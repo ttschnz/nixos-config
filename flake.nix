@@ -18,7 +18,7 @@
           ./ttschnz/configuration.nix
 
           ./modules/adb.nix
-          ./modules/ti-nspire.nix
+          ./modules/ti.nix
           ./modules/environment.nix
           ./modules/fonts.nix
           ./modules/networking.nix

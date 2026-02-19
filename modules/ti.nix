@@ -14,4 +14,7 @@
   # MSP430 LaunchPad eZ-FET Debugger (0451:f432)  
   SUBSYSTEM=="usb", ATTRS{idVendor}=="0451", ATTRS{idProduct}=="f432", MODE="0666", GROUP="plugdev"
   '';
+  
+  boot.kernelModules = [ "ti_usb_3410_5052" ];
+  hardware.enableRedistributableFirmware = true;
 }
