@@ -54,4 +54,9 @@
   ravedude
   esp-generate
   espup
+
+  usbutils
+  dig
+  unzip
+  lsof
 ]

@@ -19,4 +19,5 @@
   libinput
   spotify
   ffmpeg
+  audacity
 ]
