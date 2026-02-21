@@ -19,5 +19,6 @@
   libinput
   spotify
   ffmpeg
+  neuralnote
   audacity
 ]

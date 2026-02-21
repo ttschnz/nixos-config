@@ -31,7 +31,7 @@
           ./modules/packages.nix
           ./modules/packages/threema.nix
           ./modules/packages/audiveris.nix
-          ./modules/packages/neuralnote.nix
+          ./modules/packages/neuralnote
           ./modules/packages/msp430debuglib
           ./modules/packages/vscode-wrapped
 

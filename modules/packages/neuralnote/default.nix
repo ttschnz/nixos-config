@@ -78,5 +78,9 @@ let
     ];
   };
 in {
-  environment.systemPackages = [ neuralnote ];
+   nixpkgs.overlays = [
+    (final: prev: {
+      neuralnote = neuralnote;
+    })
+  ];
 }
