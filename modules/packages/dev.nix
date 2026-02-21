@@ -59,4 +59,12 @@
   dig
   unzip
   lsof
+
+
+  # requirements for development of MSP-board
+  mspdebug
+  libusb1
+  msp430debuglib
+  libusb-compat-0_1
+  gcc-unwrapped
 ]

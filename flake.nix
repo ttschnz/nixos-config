@@ -32,7 +32,9 @@
           ./modules/packages/threema.nix
           ./modules/packages/audiveris.nix
           ./modules/packages/neuralnote.nix
+          ./modules/packages/msp430debuglib
 
+          ./modules/session_vars.nix
 
           ./modules/services.nix
           ./modules/services/data_partition.nix
