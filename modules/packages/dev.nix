@@ -1,4 +1,5 @@
 { pkgs, ... }: with pkgs; [
+  vscode-wrapped
   age
   sops
   yq

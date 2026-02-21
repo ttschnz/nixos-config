@@ -90,9 +90,6 @@ in
     
     ## Misc
     import ./packages/misc.nix { inherit pkgs; } ++ 
-
-    ## VSCode & Extensions
-    import ./packages/vscode.nix { inherit pkgs; } ++
     
     # Modules
     go2faModule.packages;
