@@ -68,4 +68,6 @@
   msp430debuglib
   libusb-compat-0_1
   gcc-unwrapped
+
+  witr
 ]

@@ -33,6 +33,7 @@
           ./modules/packages/audiveris.nix
           ./modules/packages/neuralnote
           ./modules/packages/msp430debuglib
+          ./modules/packages/witr
           ./modules/packages/vscode-wrapped
 
           ./modules/session_vars.nix
