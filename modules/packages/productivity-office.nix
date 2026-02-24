@@ -16,5 +16,6 @@
   moon
   sql-studio
   sqlite
+  teams-for-linux
   (callPackage ./n-link.nix {})
 ]
