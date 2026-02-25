@@ -6,6 +6,13 @@
     networkmanager.enable = true;
     # wireless.enable = true;  # Enables wireless support via wpa_supplicant.
     
+    # MediaTek WiFi 6 sometimes has intermittent stability issues.
+    # Because "deauthenticating from ... by local choice (Reason: 3=DEAUTH_LEAVING)" appears in logs (sudo journalctl -k -b | grep wlp1s0)
+    # Disabling powersave might help stabilizing connectivity.
+    wifi.powersave = false; 
+    # Reducing roaming aggressiveness prevents NetworkManager from constantly scanning for and switching to nearby APs, which might be part of the issue.
+    wifi.scanRandMacAddress = false;
+
     firewall = {
       enable = true;
       allowedTCPPortRanges = [ { from = 1714; to = 1764;} ]; # for Gsconnect
