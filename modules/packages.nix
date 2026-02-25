@@ -48,7 +48,7 @@ in
       # cd = "z";
       lspkg = "nix-store --query --requisites /run/current-system | cut -d- -f2- | sort | uniq";
       # TODO: secrets (2fa)
-       vpn = "sudo expect /home/tim/nixos-config/modules/vpn.exp $(cat " + config.sops.secrets."vpn_credentials".path + ") $(2fa tim-epfl)";
+       vpn = "sudo expect /home/tim/nixos-config/modules/vpn.exp \"" + config.sops.secrets."vpn_credentials".path + "\" $(2fa tim-epfl)";
     };
   };
   

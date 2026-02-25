@@ -4,8 +4,13 @@
 set timeout -1
 set vpn_server "vpn.epfl.ch"
 set username "ttschanz"
-set password [lindex $argv 0]
 set twofa_code [lindex $argv 1]
+
+# Read password from file securely
+set password_file [lindex $argv 0]
+set fp [open $password_file r]
+set password [string trim [read $fp]]
+close $fp
 
 
 # Launch openconnect
