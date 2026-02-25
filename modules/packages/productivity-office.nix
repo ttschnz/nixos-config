@@ -17,5 +17,6 @@
   sql-studio
   sqlite
   teams-for-linux
+  omnissa-horizon-client
   (callPackage ./n-link.nix {})
 ]
