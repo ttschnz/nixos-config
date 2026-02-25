@@ -9,9 +9,9 @@
     # MediaTek WiFi 6 sometimes has intermittent stability issues.
     # Because "deauthenticating from ... by local choice (Reason: 3=DEAUTH_LEAVING)" appears in logs (sudo journalctl -k -b | grep wlp1s0)
     # Disabling powersave might help stabilizing connectivity.
-    wifi.powersave = false; 
+    networkmanager.wifi.powersave = false; 
     # Reducing roaming aggressiveness prevents NetworkManager from constantly scanning for and switching to nearby APs, which might be part of the issue.
-    wifi.scanRandMacAddress = false;
+    networkmanager.wifi.scanRandMacAddress = false;
 
     firewall = {
       enable = true;
