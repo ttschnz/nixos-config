@@ -36,6 +36,12 @@
   # 2025-09-28: failed (6.12.47 -> 6.12.48, reverted to x.46)
   # 2025-10-24: failed (6.12.46 -> 6.12.54, reverted to x.46)
   boot.kernelParams = [ "mt7921_common.disable_clc=1" ]; # try fix boot kernel freeze https://github.com/NixOS/nixpkgs/issues/448088#issuecomment-3368447041
+  
+  # disable algif_aead (CVE-2026-31431)
+  boot.blacklistedKernelModules = [ "algif_aead" ];
+  boot.extraModprobeConfig = ''
+    install algif_aead /run/current-system/sw/bin/false
+  '';
 
   # Bootloader
   # boot.loader.systemd-boot.enable = true;
