@@ -13,6 +13,9 @@
   SUBSYSTEM=="usb", ATTRS{idVendor}=="0451", ATTRS{idProduct}=="2046", MODE="0666", GROUP="plugdev"
   # MSP430 LaunchPad eZ-FET Debugger (0451:f432)  
   SUBSYSTEM=="usb", ATTRS{idVendor}=="0451", ATTRS{idProduct}=="f432", MODE="0666", GROUP="plugdev"
+  # TI XDS110 generic
+  # SUBSYSTEM=="usb", ATTRS{idVendor}=="0451", ATTRS{idProduct}=="bef3", MODE="0666", GROUP="plugdev"
+  SUBSYSTEM=="usb", ATTRS{idVendor}=="0451", MODE="0666", GROUP="plugdev"
   '';
   
   boot.kernelModules = [ "ti_usb_3410_5052" ];
