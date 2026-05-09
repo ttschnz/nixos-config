@@ -9,8 +9,11 @@
 
 {
   imports =
-    [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
+    [
+      ./security/CVE-2026-31431.nix # copy fail
+      ./security/CVE-2026-43284.nix # dirty frag
+
+      ./hardware-configuration.nix  # Include the results of the hardware scan.
     ];
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
@@ -24,24 +27,19 @@
   services.xserver.xkb = {
     layout = "ch";
   };
-  
+
   # Configure console keymap
   console.keyMap = "sg";
 
 
-  
+
 
   # 2025-09-10: worked (6.12.?? -> 6.12.46)
   # 2025-09-15: worked (6.12.46 -> 6.12.47)
   # 2025-09-28: failed (6.12.47 -> 6.12.48, reverted to x.46)
   # 2025-10-24: failed (6.12.46 -> 6.12.54, reverted to x.46)
   boot.kernelParams = [ "mt7921_common.disable_clc=1" ]; # try fix boot kernel freeze https://github.com/NixOS/nixpkgs/issues/448088#issuecomment-3368447041
-  
-  # disable algif_aead (CVE-2026-31431)
-  boot.blacklistedKernelModules = [ "algif_aead" ];
-  boot.extraModprobeConfig = ''
-    install algif_aead /run/current-system/sw/bin/false
-  '';
+
 
   # Bootloader
   # boot.loader.systemd-boot.enable = true;
