@@ -18,5 +18,6 @@
   sqlite
   teams-for-linux
   omnissa-horizon-client
+  viking
   (callPackage ./n-link.nix {})
 ]
