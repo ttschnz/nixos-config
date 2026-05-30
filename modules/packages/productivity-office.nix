@@ -13,7 +13,7 @@
   notion-app-enhanced
   anki
   musescore
-  moon
+  # moon # build error at 1.41.8. current version is 2.2.6
   sql-studio
   sqlite
   teams-for-linux
