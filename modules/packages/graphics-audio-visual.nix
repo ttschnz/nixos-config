@@ -21,5 +21,5 @@
   ffmpeg
   neuralnote
   audacity
-  perl540Packages.AppMusicChordPro
+  perlPackages.AppMusicChordPro
 ]

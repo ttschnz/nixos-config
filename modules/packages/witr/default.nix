@@ -1,6 +1,6 @@
 { config, pkgs, lib, ... }:
 let
-   witr = pkgs.buildGoModule rec {
+   witr = pkgs.buildGo126Module rec {
     pname = "witr";
     rev = "v0.3.0";
     version = "git-${rev}";

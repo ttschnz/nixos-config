@@ -6,13 +6,13 @@ let
     freetype
     alsa-lib
 
-    xorg.libX11
-    xorg.libXcursor
-    xorg.libXrandr
-    xorg.libXinerama
-    xorg.libXi
-    xorg.libXrender
-    xorg.libxcb
+    libX11
+    libXcursor
+    libXrandr
+    libXinerama
+    libXi
+    libXrender
+    libxcb
 
     mesa
     libGL
