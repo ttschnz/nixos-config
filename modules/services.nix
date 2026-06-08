@@ -49,4 +49,7 @@
 
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true; 
+
+  # enable cooler control background services + gui
+  programs.coolercontrol.enable = true;
 }
