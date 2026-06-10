@@ -73,6 +73,27 @@
           ./modules/services/tor.nix
         ];
       };
+
+      castor = nixpkgs.lib.nixosSystem {
+        system = "aarch64-linux";
+        modules = [
+          sops-nix.nixosModules.sops
+          ./secrets/secrets.nix
+          ./castor/hardware-configuration.nix
+
+          ./castor/system.nix
+          ./castor/modules/networking.nix
+          ./castor/modules/users.nix
+
+          ./castor/services/smartd.nix
+          ./castor/services/samba.nix
+          ./castor/services/ssh.nix
+          ./castor/services/zfs.nix
+          ./castor/services/tailscale.nix
+          ./castor/services/syncthing.nix
+        ];
+      };
+      
       poseidon = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         modules = [  
