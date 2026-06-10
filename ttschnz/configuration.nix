@@ -31,8 +31,8 @@
   # Configure console keymap
   console.keyMap = "sg";
 
-
-
+  # TEMPORARY - to flash castor image
+  boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
 
   # 2025-09-10: worked (6.12.?? -> 6.12.46)
   # 2025-09-15: worked (6.12.46 -> 6.12.47)
