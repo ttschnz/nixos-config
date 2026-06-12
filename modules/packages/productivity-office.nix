@@ -19,5 +19,6 @@
   teams-for-linux
   omnissa-horizon-client
   viking
+  zfs
   (callPackage ./n-link.nix {})
 ]
