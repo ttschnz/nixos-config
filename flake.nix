@@ -91,6 +91,7 @@
           ./castor/services/zfs.nix
           ./castor/services/tailscale.nix
           ./castor/services/syncthing.nix
+          ./castor/services/immich.nix
         ];
       };
       
