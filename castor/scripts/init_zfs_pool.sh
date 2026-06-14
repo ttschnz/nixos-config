@@ -43,7 +43,7 @@ zfs create -o com.sun:auto-snapshot=false "$POOL/services/beszel"
 
 chown "$USER:$GROUP" /data/tim /data/shared /data/backup
 chown "immich:immich" /data/services/immich
-# chown "??:??" /data/services/beszel
+# chown "beszel-hub:beszel-hub" /data/services/beszel
 
 chmod 0700 /data/tim
 chmod 0775 /data/shared
