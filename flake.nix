@@ -92,6 +92,7 @@
           ./castor/services/tailscale.nix
           ./castor/services/syncthing.nix
           ./castor/services/immich.nix
+          ./castor/services/beszel.nix
         ];
       };
       

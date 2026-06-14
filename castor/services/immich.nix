@@ -12,7 +12,7 @@
   services.immich.environment.IMMICH_LOG_LEVEL = "warn";
 
   # change media location
-  services.immich.mediaLocation = "/data/immich";
+  services.immich.mediaLocation = "/data/services/immich";
 
   # disable ML (not enough memory)
   services.immich.machine-learning.enable = false;
