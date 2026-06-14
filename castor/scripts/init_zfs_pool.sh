@@ -37,12 +37,20 @@ zpool create \
 zfs create -o com.sun:auto-snapshot=true  "$POOL/tim"
 zfs create -o com.sun:auto-snapshot=true  "$POOL/shared"
 zfs create -o com.sun:auto-snapshot=false "$POOL/backup"
+zfs create -o com.sun:auto-snapshot=false "$POOL/services"
+zfs create -o com.sun:auto-snapshot=false "$POOL/services/immich"
+zfs create -o com.sun:auto-snapshot=false "$POOL/services/beszel"
 
 chown "$USER:$GROUP" /data/tim /data/shared /data/backup
+chown "immich:immich" /data/services/immich
+# chown "??:??" /data/services/beszel
 
 chmod 0700 /data/tim
 chmod 0775 /data/shared
 chmod 0700 /data/backup
+chmod 0700 /data/services
+chmod 0700 /data/services/immich
+chmod 0700 /data/services/beszel
 
 zpool status "$POOL"
 zfs list -r "$POOL"
