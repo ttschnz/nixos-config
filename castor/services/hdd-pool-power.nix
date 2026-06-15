@@ -17,6 +17,9 @@ let
   udevadm = "${pkgs.systemd}/bin/udevadm";
   sleep = "${pkgs.coreutils}/bin/sleep";
   findmnt = "${pkgs.util-linux}/bin/findmnt";
+  tailscale = "${pkgs.tailscale}/bin/tailscale";
+  jq = "${pkgs.jq}/bin/jq";
+
 
   zfsPkg = config.boot.zfs.package;
   zpool = "${zfsPkg}/bin/zpool";
@@ -92,6 +95,54 @@ let
     # switch gpio output from on (1) to off (0)
     ${systemctl} stop hdd-power-on-hold.service || true
     ${systemctl} start hdd-power-off-hold.service
+  '';
+
+  hddZpoolAutoSleep = pkgs.writeShellScript "hdd-zpool-autosleep" ''
+    set -euo pipefail
+
+    stateDir="/run/hdd-zpool-autosleep"
+    stateFile="$stateDir/offline-count"
+    offlineLimit=10   # 10 checks * 30 s = 5 min offline before poweroff
+
+    mkdir -p "$stateDir"
+
+    if [ ! -f "$stateFile" ]; then
+      echo 0 > "$stateFile"
+    fi
+
+    # Do not change disk state if tailscale status itself fails.
+    # This avoids powering off because tailscaled temporarily misbehaved.
+    if ! status="$(${tailscale} status --json 2>/dev/null)"; then
+      echo "tailscale status failed; leaving current disk state unchanged" >&2
+      exit 0
+    fi
+
+    # if anyone is connected, reset state to 0 and start zfs pool if not done yet
+    if echo "$status" | ${jq} -e 'any(.Peer[]?; .Online == true)' >/dev/null; then
+      echo 0 > "$stateFile"
+
+      if ! ${systemctl} -q is-active hdd-zpool.target; then
+        echo "At least one Tailscale peer online; starting HDD/ZFS"
+        ${systemctl} start hdd-zpool-on.service
+      else
+        echo "At least one Tailscale peer online; HDD/ZFS already active"
+      fi
+    else
+      count="$(cat "$stateFile")"
+      count="$((count + 1))"
+      echo "$count" > "$stateFile"
+
+      echo "No Tailscale peers online; offline count $count/$offlineLimit"
+
+      if [ "$count" -ge "$offlineLimit" ]; then
+        if ${systemctl} -q is-active hdd-zpool.target; then
+          echo "Offline threshold reached; stopping HDD/ZFS"
+          ${systemctl} start hdd-zpool-off.service
+        else
+          echo "Offline threshold reached; HDD/ZFS already inactive"
+        fi
+      fi
+    fi
   '';
 
   waitForGpio = pkgs.writeShellScript "wait-for-gpiochip0" ''
@@ -206,6 +257,32 @@ in
       ExecStart = hddZpoolOff;
       TimeoutStartSec = "120s";
       RemainAfterExit = false;
+    };
+  };
+
+  # Auto turn pools off and on based on tailscale connections
+  systemd.services.hdd-zpool-autosleep = {
+    description = "Automatically power HDD/ZFS based on online Tailscale peers";
+
+    after = [ "tailscaled.service" ];
+    wants = [ "tailscaled.service" ];
+
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = hddZpoolAutoSleep;
+    };
+  };
+
+  systemd.timers.hdd-zpool-autosleep = {
+    description = "Periodically check whether HDD/ZFS should be powered";
+
+    wantedBy = [ "timers.target" ];
+
+    timerConfig = {
+      OnBootSec = "1min";
+      OnUnitActiveSec = "30s";
+      AccuracySec = "5s";
+      Unit = "hdd-zpool-autosleep.service";
     };
   };
 }
