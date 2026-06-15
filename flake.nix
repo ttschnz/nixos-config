@@ -93,6 +93,7 @@
           ./castor/services/syncthing.nix
           ./castor/services/immich.nix
           ./castor/services/beszel.nix
+          ./castor/services/hdd-pool-power.nix
         ];
       };
       
