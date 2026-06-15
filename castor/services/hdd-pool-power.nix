@@ -80,6 +80,8 @@ let
 
     # notify other services that the storage is ready
     ${systemctl} start hdd-zpool.target
+    # restart beszel agent now that it can monitor the /data mount
+    ${systemctl} try-restart beszel-agent.service
   '';
 
   hddZpoolOff = pkgs.writeShellScript "hdd-zpool-off" ''
