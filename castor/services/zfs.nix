@@ -3,7 +3,10 @@
 {
   boot.supportedFilesystems = [ "zfs" ];
   boot.zfs.forceImportRoot = false;
-  boot.zfs.extraPools = [ "data" ];
+  
+  # disabled in favour of hdd-pool-power.nix: 
+  # only import after spinning up disks, not on boot.
+  # boot.zfs.extraPools = [ "data" ];
 
   # false for HDDs, true for SSDs
   services.zfs.trim.enable = false;
