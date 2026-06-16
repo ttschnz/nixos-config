@@ -276,7 +276,7 @@ in
     serviceConfig = {
       Type = "oneshot";
       ExecStart = hddZpoolAutoSleep;
-      RemainAfterExit = true;
+      RemainAfterExit = false;
     };
   };
 
