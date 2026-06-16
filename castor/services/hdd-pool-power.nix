@@ -19,6 +19,7 @@ let
   findmnt = "${pkgs.util-linux}/bin/findmnt";
   tailscale = "${pkgs.tailscale}/bin/tailscale";
   jq = "${pkgs.jq}/bin/jq";
+  curl = "${pkgs.curl}/bin/curl";
 
 
   zfsPkg = config.boot.zfs.package;
@@ -125,6 +126,7 @@ let
 
       if ! ${systemctl} -q is-active hdd-zpool.target; then
         echo "At least one Tailscale peer online; starting HDD/ZFS"
+        ${curl} -X POST ntfy.sh/hdd-pool-power_castor --data "At least one Tailscale peer online; starting HDD/ZFS"
         ${systemctl} start hdd-zpool-on.service
       else
         echo "At least one Tailscale peer online; HDD/ZFS already active"
@@ -133,12 +135,14 @@ let
       count="$(cat "$stateFile")"
       count="$((count + 1))"
       echo "$count" > "$stateFile"
-
+      
+      ${curl} -X POST ntfy.sh/hdd-pool-power_castor --data "No Tailscale peers online; offline count $count/$offlineLimit"
       echo "No Tailscale peers online; offline count $count/$offlineLimit"
 
       if [ "$count" -ge "$offlineLimit" ]; then
         if ${systemctl} -q is-active hdd-zpool.target; then
           echo "Offline threshold reached; stopping HDD/ZFS"
+          ${curl} -X POST ntfy.sh/hdd-pool-power_castor --data "Offline threshold reached; stopping HDD/ZFS"
           ${systemctl} start hdd-zpool-off.service
         else
           echo "Offline threshold reached; HDD/ZFS already inactive"
