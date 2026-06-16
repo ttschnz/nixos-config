@@ -136,7 +136,6 @@ let
       count="$((count + 1))"
       echo "$count" > "$stateFile"
       
-      ${curl} -X POST ntfy.sh/hdd-pool-power_castor --data "No Tailscale peers online; offline count $count/$offlineLimit"
       echo "No Tailscale peers online; offline count $count/$offlineLimit"
 
       if [ "$count" -ge "$offlineLimit" ]; then
