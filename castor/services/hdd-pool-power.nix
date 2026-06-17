@@ -168,13 +168,15 @@ let
   '';
 
   poolDependentService = {
-    partOf = [ "hdd-zpool.target" ];
-    after = [ "hdd-zpool.target" ];
-    # replace existing boot enablement
-    wantedBy = lib.mkForce [ "hdd-zpool.target" ];
+    # partOf = [ "hdd-zpool.target" ];
+    # after = [ "hdd-zpool.target" ];
+    # # replace existing boot enablement
+    # wantedBy = lib.mkForce [ "hdd-zpool.target" ];
     # do not use requiresMountsFor = [ "/data" ];, it will try to mount it itself.
     # use this instead, only starts if /data is a mountpoint (passive check)
     unitConfig.ConditionPathIsMountPoint = "/data";
+    # Do not auto-start at boot.
+    wantedBy = lib.mkForce [];
   };
 in
 {
