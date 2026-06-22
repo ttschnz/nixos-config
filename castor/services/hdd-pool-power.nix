@@ -205,6 +205,7 @@ in
   systemd.services."samba-nmbd" = poolDependentService;
   systemd.services."samba-winbindd" = poolDependentService;
   systemd.services."samba-wsdd" = poolDependentService;
+  systemd.services."smartd" = poolDependentService;
 
 
 
