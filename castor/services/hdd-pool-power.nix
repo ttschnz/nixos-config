@@ -193,6 +193,8 @@ in
   systemd.services."immich-server" = poolDependentService;
   systemd.services."redis-immich" = poolDependentService;
 
+  systemd.services."container@immich-public" = poolDependentService;
+
   systemd.services."syncthing" = poolDependentService;
   systemd.services."syncthing-init" = poolDependentService;
 
