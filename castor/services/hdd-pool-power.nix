@@ -121,7 +121,7 @@ let
     fi
 
     # if anyone is connected, reset state to 0 and start zfs pool if not done yet
-    if echo "$status" | ${jq} -e 'any(.Peer[]?; .Online == true)' >/dev/null; then
+    if echo "$status" | ${jq} -e 'any(.Peer[]?; .Online == true and (has("Tags") | not ))' >/dev/null; then
       echo 0 > "$stateFile"
 
       if ! ${systemctl} -q is-active hdd-zpool.target; then
