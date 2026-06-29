@@ -79,6 +79,8 @@ let
     # print status
     ${zpool} status ${qPool}
 
+    ${ntfy} send hdd-pool-power_castor "HDD/ZFS mounted and ready. Starting services." || true
+
     # notify other services that the storage is ready
     ${systemctl} start hdd-zpool.target
     # restart beszel agent now that it can monitor the /data mount
@@ -94,6 +96,8 @@ let
     if ${zpool} list -H -o name ${qPool} >/dev/null 2>&1; then
       ${zpool} export ${qPool}
     fi
+
+    ${ntfy} send hdd-pool-power_castor "Stopping HDD/ZFS system." || true
 
     # switch gpio output from on (1) to off (0)
     ${systemctl} stop hdd-power-on-hold.service || true
