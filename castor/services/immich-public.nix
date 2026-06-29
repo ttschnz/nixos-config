@@ -98,4 +98,47 @@ in
   boot.kernel.sysctl = {
     "net.ipv4.ip_forward" = 1;
   };
+
+  
+  systemd.sockets.hdd-http-wakeup = {
+    description = "Wake HDD/ZFS stack on TCP traffic to port 18080";
+    wantedBy = [ "multi-user.target" ];
+
+    # Only start this listener if /data is not currently mounted.
+    # Prevents accidental socket startup while the pool is already active.
+    unitConfig.ConditionPathIsMountPoint = "!/data";
+    socketConfig = {
+      ListenStream = toString listenPort;
+      Accept = false;
+      NoDelay = true;
+      # Traffic on this socket starts the dummy trigger service.
+      Service = "hdd-http-wakeup.service";
+    };
+  };
+
+  systemd.services.hdd-http-wakeup = {
+    description = "Trigger HDD/ZFS stack from HTTP wakeup socket";
+    wants = [ "hdd-zpool-on.service" ];
+    # The trigger should complete before the real disk import starts to avoid port conflicts
+    before = [ "hdd-zpool-on.service" ];
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "${pkgs.coreutils}/bin/true";
+    };
+  };
+
+  # add properties to existing on/off oneshot services (defined in hdd-pool-power.nix)
+  systemd.services.hdd-zpool-on = {
+    # When hdd-zpool-on.service starts, stop the placeholder socket
+    # so Immich can later bind :18080.
+    conflicts = [ "hdd-http-wakeup.socket" ];
+    # Ensures the socket stop job is ordered before the on-service start job.
+    after = [ "hdd-http-wakeup.socket" ];
+  };
+
+  systemd.services.hdd-zpool-off = {
+    # After powering down/exporting the pool, re-enable the wakeup listener.
+    wants = [ "hdd-http-wakeup.socket" ];
+    before = [ "hdd-http-wakeup.socket" ];
+  };
 }
