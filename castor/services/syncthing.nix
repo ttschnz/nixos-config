@@ -17,17 +17,9 @@
         path = "/data/tim/syncthing/cloud";
         devices = [ "pixel6a" "samsungtab" "ttschnz" ];
       };
-      "Images" = {
-        path = "/data/tim/syncthing/images";
-        devices = [ "pixel6a" "samsungtab" "ttschnz" ];
-      };
       "Documents" = {
         path = "/data/tim/syncthing/documents";
         devices = [ "pixel6a" "ttschnz" ];
-      };
-      "KeePass" = {
-        path = "/data/tim/syncthing/keepass";
-        devices = [ "pixel6a" "samsungtab" "ttschnz" ];
       };
       "Notes" = {
         path = "/data/tim/syncthing/notes";
