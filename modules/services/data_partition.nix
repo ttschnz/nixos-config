@@ -44,6 +44,7 @@
     settings.devices= {
       "pixel6a" = { id = config.sops.secrets."syncthing/pixel6a".value; };
       "samsungtab" = { id = config.sops.secrets."syncthing/samsungtab".value; };
+      "castor" = { id = config.sops.secrets."syncthing/castor".value; };
     };
 
     settings.folders = {
@@ -53,7 +54,7 @@
       };
       "Documents" = {
         path = "/home/tim/data/Privat/Dokumente";
-        devices = [ "pixel6a" ];
+        devices = [ "pixel6a" "castor" ];
       };
       "KeePass" = {
         path = "/home/tim/data/Privat/KeePass";
@@ -61,11 +62,11 @@
       };
       "Notes" = {
         path = "/home/tim/data/Privat/Notes";
-        devices = [ "pixel6a" "samsungtab" ];
+        devices = [ "pixel6a" "samsungtab" "castor" ];
       };
       "Backups" = {
         path = "/home/tim/data/Privat/Backups";
-        devices = [ "pixel6a" "samsungtab" ];
+        devices = [ "pixel6a" "samsungtab" "castor" ];
       };
     };
   };

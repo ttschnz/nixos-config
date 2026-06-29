@@ -24,6 +24,7 @@
     };
     "syncthing/pixel6a" = { value = null; };
     "syncthing/samsungtab" = { value = null; };
+    "syncthing/castor" = { value = null; };
     "syncthing/web_gui_password" = { value = null; };
     "git/name" = { value = null; };
     "git/email" = { value = null; };
