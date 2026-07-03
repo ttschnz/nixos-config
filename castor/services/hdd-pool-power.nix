@@ -95,9 +95,23 @@ let
     # stop services that depend on the zpool
     ${systemctl} stop hdd-zpool.target
 
+    # wait until services are really gone
+    for i in $(seq 1 30); do
+      ${systemctl} is-active --quiet hdd-zpool.target || break
+      ${sleep} 1
+    done
+
+    if ${systemctl} is-active --quiet hdd-zpool.target; then
+      echo "Timed out waiting for hdd-zpool.target to stop." >&2
+      exit 1
+    fi
+
     # export (=>disable) the pool
     if ${zpool} list -H -o name ${qPool} >/dev/null 2>&1; then
-      ${zpool} export ${qPool}
+      if ! ${pkgs.coreutils}/bin/timeout 60 ${zpool} export ${qPool}; then
+        echo "Failed (or timed out) exporting ${pool}" >&2
+        exit 1
+      fi
     fi
 
     ${ntfy} send hdd-pool-power_castor "Stopping HDD/ZFS system." || true
@@ -260,10 +274,9 @@ in
   systemd.services.hdd-zpool-off = {
     description = "Export ZFS pool and power off HDD";
     
-    # TODO: power disks off when shutting down
-    # wantedBy = [ "shutdown.target" ];
-    # before = [ "shutdown.target" ];
-    # conflicts = [ "shutdown.target" ];
+    wantedBy = [ "shutdown.target" ];
+    before = [ "shutdown.target" ];
+    unitConfig.DefaultDependencies = false;
 
     serviceConfig = {
       Type = "oneshot";
