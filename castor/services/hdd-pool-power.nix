@@ -10,6 +10,9 @@ let
   gpioLine2 = "24";
 
   spinupSeconds = "3";
+  offlineLimit = "10"; # 10 checks * 30 sec = 5 min
+  stateDir="/run/hdd-zpool-autosleep";
+  stateFile="${stateDir}/offline-count";
   importDir = "/dev/disk/by-id";
 
   gpioset = "${pkgs.libgpiod}/bin/gpioset";
@@ -107,14 +110,10 @@ let
   hddZpoolAutoSleep = pkgs.writeShellScript "hdd-zpool-autosleep" ''
     set -euo pipefail
 
-    stateDir="/run/hdd-zpool-autosleep"
-    stateFile="$stateDir/offline-count"
-    offlineLimit=10   # 10 checks * 30 s = 5 min offline before poweroff
+    mkdir -p "${stateDir}"
 
-    mkdir -p "$stateDir"
-
-    if [ ! -f "$stateFile" ]; then
-      echo 0 > "$stateFile"
+    if [ ! -f "${stateFile}" ]; then
+      echo "${offlineLimit}" > "${stateFile}"
     fi
 
     # Do not change disk state if tailscale status itself fails.
@@ -126,7 +125,7 @@ let
 
     # if anyone is connected, reset state to 0 and start zfs pool if not done yet
     if echo "$status" | ${jq} -e 'any(.Peer[]?; .Online == true and (has("Tags") | not ))' >/dev/null; then
-      echo 0 > "$stateFile"
+      echo "${offlineLimit}" > "${stateFile}"
 
       if ! ${systemctl} -q is-active hdd-zpool.target; then
         echo "At least one Tailscale peer online; starting HDD/ZFS"
@@ -136,13 +135,13 @@ let
         echo "At least one Tailscale peer online; HDD/ZFS already active"
       fi
     else
-      count="$(cat "$stateFile")"
-      count="$((count + 1))"
-      echo "$count" > "$stateFile"
+      count="$(cat "${stateFile}")"
+      count="$((count - 1))"
+      echo "$count" > "${stateFile}"
       
-      echo "No Tailscale peers online; offline count $count/$offlineLimit"
+      echo "No Tailscale peers online; offline count $count/${offlineLimit}"
 
-      if [ "$count" -ge "$offlineLimit" ]; then
+      if [ 0 -ge "$count" ]; then
         if ${systemctl} -q is-active hdd-zpool.target; then
           echo "Offline threshold reached; stopping HDD/ZFS"
           ${ntfy} send hdd-pool-power_castor "Offline threshold reached; stopping HDD/ZFS" || true
