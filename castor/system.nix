@@ -30,8 +30,8 @@
   };
 
   # Quiet boot
-  boot.consoleLogLevel = 0;
-  boot.kernelParams = [ "quiet" "loglevel=0" ];
+  # boot.consoleLogLevel = 0;
+  # boot.kernelParams = [ "quiet" "loglevel=0" ];
 
   # users are declarative only (security)
   users.mutableUsers = false;
