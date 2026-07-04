@@ -34,10 +34,6 @@ let
 
   hddZpoolOn = pkgs.writeShellScript "hdd-zpool-on" ''
     set -euo pipefail
-    
-    # switch gpio output from off (0) to on (1)
-    ${systemctl} stop hdd-power-off-hold.service || true
-    ${systemctl} start hdd-power-on-hold.service
 
     # wait for disks to start
     ${sleep} ${spinupSeconds}
@@ -59,7 +55,6 @@ let
       echo "Failed to import ZFS pool ${pool}" >&2
       ${zpool} import || true
       ${systemctl} stop hdd-power-on-hold.service || true
-      ${systemctl} start hdd-power-off-hold.service || true
       exit 1
     fi
 
@@ -74,7 +69,6 @@ let
       echo "Some datasets in ${pool} are not mounted; refusing to start hdd-zpool.target" >&2
       ${zfs} list -r -o name,keystatus,mounted,mountpoint,canmount ${qPool} >&2
       ${zpool} export ${qPool} || true
-      ${systemctl} stop hdd-power-on-hold.service || true
       ${systemctl} start hdd-power-off-hold.service || true
       exit 1
     fi
@@ -83,28 +77,10 @@ let
     ${zpool} status ${qPool}
 
     ${ntfy} send hdd-pool-power_castor "HDD/ZFS mounted and ready. Starting services." || true
-
-    # notify other services that the storage is ready
-    ${systemctl} start hdd-zpool.target
-    # restart beszel agent now that it can monitor the /data mount
-    ${systemctl} try-restart beszel-agent.service
   '';
 
   hddZpoolOff = pkgs.writeShellScript "hdd-zpool-off" ''
     set -euo pipefail
-    # stop services that depend on the zpool
-    ${systemctl} stop hdd-zpool.target
-
-    # wait until services are really gone
-    for i in $(seq 1 30); do
-      ${systemctl} is-active --quiet hdd-zpool.target || break
-      ${sleep} 1
-    done
-
-    if ${systemctl} is-active --quiet hdd-zpool.target; then
-      echo "Timed out waiting for hdd-zpool.target to stop." >&2
-      exit 1
-    fi
 
     # export (=>disable) the pool
     if ${zpool} list -H -o name ${qPool} >/dev/null 2>&1; then
@@ -115,10 +91,6 @@ let
     fi
 
     ${ntfy} send hdd-pool-power_castor "Stopping HDD/ZFS system." || true
-
-    # switch gpio output from on (1) to off (0)
-    ${systemctl} stop hdd-power-on-hold.service || true
-    ${systemctl} start hdd-power-off-hold.service
   '';
 
   hddZpoolAutoSleep = pkgs.writeShellScript "hdd-zpool-autosleep" ''
@@ -141,10 +113,10 @@ let
     if echo "$status" | ${jq} -e 'any(.Peer[]?; .Online == true and (has("Tags") | not ))' >/dev/null; then
       echo "${offlineLimit}" > "${stateFile}"
 
-      if ! ${systemctl} -q is-active hdd-zpool.target; then
+      if ! ${systemctl} -q is-active hdd-zpool.service; then
         echo "At least one Tailscale peer online; starting HDD/ZFS"
         ${ntfy} send hdd-pool-power_castor "At least one Tailscale peer online; starting HDD/ZFS" || true
-        ${systemctl} start hdd-zpool-on.service
+        ${systemctl} start hdd-zpool.target
       else
         echo "At least one Tailscale peer online; HDD/ZFS already active"
       fi
@@ -156,10 +128,10 @@ let
       echo "No Tailscale peers online; offline count $count/${offlineLimit}"
 
       if [ 0 -ge "$count" ]; then
-        if ${systemctl} -q is-active hdd-zpool.target; then
+        if ${systemctl} -q is-active hdd-zpool.service; then
           echo "Offline threshold reached; stopping HDD/ZFS"
           ${ntfy} send hdd-pool-power_castor "Offline threshold reached; stopping HDD/ZFS" || true
-          ${systemctl} start hdd-zpool-off.service
+          ${systemctl} stop hdd-zpool.target
         else
           echo "Offline threshold reached; HDD/ZFS already inactive"
         fi
@@ -186,7 +158,8 @@ let
 
   poolDependentService = {
     partOf = [ "hdd-zpool.target" ];
-    after = [ "hdd-zpool.target" ];
+    requires = [ "hdd-zpool.service" ];
+    after = [ "hdd-zpool.service" ];
     # replace existing boot enablement
     wantedBy = lib.mkForce [ "hdd-zpool.target" ];
     # do not use requiresMountsFor = [ "/data" ];, it will try to mount it itself.
@@ -201,11 +174,6 @@ in
     pkgs.libgpiod
     zfsPkg
   ];
-
-  # target that represents zfs pool state
-  systemd.targets.hdd-zpool = {
-    description = "Services requiring HDD-backed ZFS pool";
-  };
 
   systemd.services."immich-server" = poolDependentService;
   systemd.services."redis-immich" = poolDependentService;
@@ -258,31 +226,33 @@ in
     };
   };
 
-  # User-facing: power disk, import pool, mount datasets.
-  systemd.services.hdd-zpool-on = {
-    description = "Power on HDD and import/mount ZFS pool";
-    
-    serviceConfig = {
-      Type = "oneshot";
-      ExecStartPre = waitForGpio;
-      ExecStart = hddZpoolOn;
-      TimeoutStartSec = "120s";
-    };
+  # target that represents zfs pool state
+  systemd.targets.hdd-zpool = {
+    description = "Services requiring HDD-backed ZFS pool";
+    requires = ["hdd-zpool.service"];
+    after = ["hdd-zpool.service"];
   };
+  # User-facing: power disk, import pool, mount datasets. export pool, then power disk off.
+  systemd.services.hdd-zpool = {
+    description = "HDD ZFS pool";
+    partOf = [ "hdd-zpool.target" ];
+    before = [ "hdd-zpool.target" ];
 
-  # User-facing: export pool, then power disk off.
-  systemd.services.hdd-zpool-off = {
-    description = "Export ZFS pool and power off HDD";
+    bindsTo = [ "hdd-power-on-hold.service" ];
+    after = [ "hdd-power-on-hold.service" ];
     
-    wantedBy = [ "shutdown.target" ];
-    before = [ "shutdown.target" ];
-    unitConfig.DefaultDependencies = false;
-
     serviceConfig = {
       Type = "oneshot";
-      ExecStart = hddZpoolOff;
+      RemainAfterExit = true;
+
+      ExecStart = hddZpoolOn;
+      ExecStartPost = "${systemctl} try-restart beszel-agent.service"; # restart beszel agent now that it can monitor the /data mount
+
+      ExecStop = hddZpoolOff;
+      ExecStopPost = "${systemctl} start hdd-power-off-hold.service";
+
       TimeoutStartSec = "120s";
-      RemainAfterExit = false;
+      TimeoutStopSec = "120s";
     };
   };
 
