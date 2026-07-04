@@ -13,6 +13,7 @@ let
   offlineLimit = "10"; # 10 checks * 30 sec = 5 min
   stateDir="/run/hdd-zpool-autosleep";
   stateFile="${stateDir}/offline-count";
+  stateFileTraffic="${stateDir}/traffic-last";
   importDir = "/dev/disk/by-id";
 
   gpioset = "${pkgs.libgpiod}/bin/gpioset";
@@ -134,7 +135,21 @@ let
       isIdle=0
     fi
 
-    if [ 0 -eq isIdle ]; then
+    ## IDLE RULE 3: no significant network traffic on tailscale0
+    read -r rx_now < /sys/class/net/wlan0/statistics/rx_bytes
+    read -r tx_now < /sys/class/net/wlan0/statistics/tx_bytes
+    if [ -f "${stateFileTraffic}" ]; then
+      read -r rx_last tx_last < "${stateFileTraffic}"
+      rx_diff=$((rx_now - rx_last))
+      tx_diff=$((tx_now - tx_last))
+      # More than ~100KB in the 30s window = ~3.3KB/s sustained
+      if [ "$rx_diff" -gt 102400 ] || [ "$tx_diff" -gt 102400 ]; then
+        isIdle=0
+      fi
+    fi
+    echo "$rx_now $tx_now" > "${stateFileTraffic}"
+
+    if [ 0 -eq "$isIdle" ]; then
       echo "${offlineLimit}" > "${stateFile}"
       if ! ${systemctl} -q is-active hdd-zpool.service; then
         echo "System left idle mode; starting HDD/ZFS."
