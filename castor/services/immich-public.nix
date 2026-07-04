@@ -132,9 +132,9 @@ in
 
   systemd.services.hdd-http-wakeup = {
     description = "Trigger HDD/ZFS stack from HTTP wakeup socket";
-    wants = [ "hdd-zpool.service" ];
+    wants = [ "hdd-zpool.target" ];
     # The trigger should complete before the real disk import starts to avoid port conflicts
-    before = [ "hdd-zpool.service" ];
+    before = [ "hdd-zpool.target" ];
     serviceConfig = {
       Type = "oneshot";
       ExecStart = hddHttpWake;
