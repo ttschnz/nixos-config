@@ -1,6 +1,8 @@
 { config, lib, pkgs, ... }:
 
 let
+  systemctl = "${pkgs.systemd}/bin/systemctl";
+
   domain = "immich.srv03.ttschnz.ch";
 
   # Private link between host and NixOS container.
@@ -118,9 +120,9 @@ in
 
   systemd.services.hdd-http-wakeup = {
     description = "Trigger HDD/ZFS stack from HTTP wakeup socket";
-    wants = [ "hdd-zpool-on.service" ];
+    wants = [ "hdd-zpool.service" ];
     # The trigger should complete before the real disk import starts to avoid port conflicts
-    before = [ "hdd-zpool-on.service" ];
+    before = [ "hdd-zpool.service" ];
     serviceConfig = {
       Type = "oneshot";
       ExecStart = "${pkgs.coreutils}/bin/true";
@@ -128,17 +130,12 @@ in
   };
 
   # add properties to existing on/off oneshot services (defined in hdd-pool-power.nix)
-  systemd.services.hdd-zpool-on = {
+  systemd.services.hdd-zpool = {
     # When hdd-zpool-on.service starts, stop the placeholder socket
     # so Immich can later bind :18080.
     conflicts = [ "hdd-http-wakeup.socket" ];
     # Ensures the socket stop job is ordered before the on-service start job.
     after = [ "hdd-http-wakeup.socket" ];
-  };
-
-  systemd.services.hdd-zpool-off = {
-    # After powering down/exporting the pool, re-enable the wakeup listener.
-    wants = [ "hdd-http-wakeup.socket" ];
-    before = [ "hdd-http-wakeup.socket" ];
+    serviceConfig.ExecStopPost = lib.mkAfter [ "${systemctl} start hdd-http-wakeup.socket"];
   };
 }
