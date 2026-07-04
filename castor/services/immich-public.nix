@@ -131,11 +131,8 @@ in
 
   # add properties to existing on/off oneshot services (defined in hdd-pool-power.nix)
   systemd.services.hdd-zpool = {
-    # When hdd-zpool-on.service starts, stop the placeholder socket
-    # so Immich can later bind :18080.
-    conflicts = [ "hdd-http-wakeup.socket" ];
-    # Ensures the socket stop job is ordered before the on-service start job.
-    after = [ "hdd-http-wakeup.socket" ];
-    serviceConfig.ExecStopPost = lib.mkAfter [ "${systemctl} start hdd-http-wakeup.socket"];
+    # When hdd-zpool-on.service starts, stop the placeholder socket so Immich can later bind :18080.
+    serviceConfig.ExecStartPre = lib.mkAfter [ "${systemctl} stop hdd-http-wakeup.socket" ];
+    serviceConfig.ExecStopPost = lib.mkAfter [ "${systemctl} start hdd-http-wakeup.socket" ];
   };
 }

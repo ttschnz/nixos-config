@@ -35,6 +35,11 @@ let
   hddZpoolOn = pkgs.writeShellScript "hdd-zpool-on" ''
     set -euo pipefail
 
+    if ! ${systemctl} -q is-active hdd-power-on-hold.service; then
+      echo "hdd-power-on-hold.service not active; refusing to start" >&2
+      exit 1
+    fi
+
     # wait for disks to start
     ${sleep} ${spinupSeconds}
     ${udevadm} settle --timeout=30 || true
@@ -238,18 +243,24 @@ in
     partOf = [ "hdd-zpool.target" ];
     before = [ "hdd-zpool.target" ];
 
-    bindsTo = [ "hdd-power-on-hold.service" ];
-    after = [ "hdd-power-on-hold.service" ];
+    wants = [ "hdd-power-on-hold.service" ];
+    requisite = [ "hdd-power-on-hold.service" ];
     
     serviceConfig = {
       Type = "oneshot";
       RemainAfterExit = true;
 
       ExecStart = hddZpoolOn;
-      ExecStartPost = "${systemctl} try-restart beszel-agent.service"; # restart beszel agent now that it can monitor the /data mount
+      ExecStartPost = [
+        # restart beszel agent now that it can monitor the /data mount
+        "${systemctl} try-restart beszel-agent.service"
+      ];
 
       ExecStop = hddZpoolOff;
-      ExecStopPost = "${systemctl} start hdd-power-off-hold.service";
+      ExecStopPost = [
+        "${systemctl} stop hdd-power-on-hold.service"
+        "${systemctl} start hdd-power-off-hold.service"
+      ];
 
       TimeoutStartSec = "120s";
       TimeoutStopSec = "120s";
