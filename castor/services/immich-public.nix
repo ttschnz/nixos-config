@@ -15,6 +15,18 @@ let
   dataDirContainer = "/srv/immich-public";
 
   publicProxyTailnetIP = "100.103.212.96";
+
+  autosleepStateDir = "/run/hdd-zpool-autosleep";
+  autosleepStateFile = "${autosleepStateDir}/offline-count";
+  autosleepTimeout = "60"; # 60 checks * 30 sec = 30min
+
+  hddHttpWake = pkgs.writeShellScript "hdd-http-wake" ''
+    set -euo pipefail
+
+    mkdir -p "${autosleepStateDir}"
+  
+    echo "${autosleepTimeout}" > "${autosleepStateFile}"  
+  '';
 in
 {
   # Ensure the host-side storage directory exists before the container starts.
@@ -125,7 +137,7 @@ in
     before = [ "hdd-zpool.service" ];
     serviceConfig = {
       Type = "oneshot";
-      ExecStart = "${pkgs.coreutils}/bin/true";
+      ExecStart = hddHttpWake;
     };
   };
 
