@@ -23,6 +23,7 @@ let
   tailscale = "${pkgs.tailscale}/bin/tailscale";
   jq = "${pkgs.jq}/bin/jq";
   ntfy = "${pkgs.ntfy-sh}/bin/ntfy";
+  bc = "${pkgs.bc}/bin/bc";
 
 
   zfsPkg = config.boot.zfs.package;
@@ -114,23 +115,41 @@ let
       exit 0
     fi
 
+    isIdle=1
+
+    ## IDLE RULE 1: system is under low load
+    # Read load averages from /proc/loadavg
+    read -r load1 load5 load15 _ < /proc/loadavg
+
+    # Check if system is at low load (all < 1)
+    if (( $(echo "$load1 > 1" | ${bc} -l) )) || \
+      (( $(echo "$load5 > 1" | ${bc} -l) )) || \
+      (( $(echo "$load15 > 1" | ${bc} -l) )); then
+        isIdle=0
+    fi
+
+    ## IDLE RULE 2: noone is connected via tailscale
     # if anyone is connected, reset state to 0 and start zfs pool if not done yet
     if echo "$status" | ${jq} -e 'any(.Peer[]?; .Online == true and (has("Tags") | not ))' >/dev/null; then
-      echo "${offlineLimit}" > "${stateFile}"
+      isIdle=0
+    fi
 
+    if [ 0 -eq isIdle ]; then
+      echo "${offlineLimit}" > "${stateFile}"
       if ! ${systemctl} -q is-active hdd-zpool.service; then
-        echo "At least one Tailscale peer online; starting HDD/ZFS"
-        ${ntfy} send hdd-pool-power_castor "At least one Tailscale peer online; starting HDD/ZFS" || true
+        echo "System left idle mode; starting HDD/ZFS."
+        ${ntfy} send hdd-pool-power_castor "System left idle mode; starting HDD/ZFS." || true
         ${systemctl} start hdd-zpool.target
       else
-        echo "At least one Tailscale peer online; HDD/ZFS already active"
+        echo "System not idle; HDD/ZFS already active"
       fi
     else
       count="$(cat "${stateFile}")"
       count="$((count - 1))"
+      count="$(($count<0?0:$count))"
       echo "$count" > "${stateFile}"
       
-      echo "No Tailscale peers online; offline count $count/${offlineLimit}"
+      echo "System idle (no Tailscale peers, low load); offline count $count/${offlineLimit}"
 
       if [ 0 -ge "$count" ]; then
         if ${systemctl} -q is-active hdd-zpool.service; then
