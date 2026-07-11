@@ -1,7 +1,7 @@
 { ... }:
 {
   services.syncthing = {
-    enable = true;
+    enable = false;
     user = "tim";
     configDir = "/home/tim/.config/syncthing";
     openDefaultPorts = true;
