@@ -127,12 +127,14 @@ let
       (( $(echo "$load5 > 1" | ${bc} -l) )) || \
       (( $(echo "$load15 > 1" | ${bc} -l) )); then
         isIdle=0
+        echo "System load high - not idle"
     fi
 
     ## IDLE RULE 2: noone is connected via tailscale
     # if anyone is connected, reset state to 0 and start zfs pool if not done yet
     if echo "$status" | ${jq} -e 'any(.Peer[]?; .Online == true and (has("Tags") | not ))' >/dev/null; then
       isIdle=0
+      echo "Tailscale peers online - not idle"
     fi
 
     ## IDLE RULE 3: no significant network traffic on tailscale0
@@ -145,6 +147,7 @@ let
       # More than ~100KB in the 30s window = ~3.3KB/s sustained
       if [ "$rx_diff" -gt 102400 ] || [ "$tx_diff" -gt 102400 ]; then
         isIdle=0
+        echo "Network traffic high - not idle"
       fi
     fi
     echo "$rx_now $tx_now" > "${stateFileTraffic}"
