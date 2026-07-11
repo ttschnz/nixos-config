@@ -13,10 +13,6 @@
     };
 
     settings.folders = {
-      "Cloud" = {
-        path = "/data/tim/syncthing/cloud";
-        devices = [ "pixel6a" "samsungtab" "ttschnz" ];
-      };
       "Documents" = {
         path = "/data/tim/syncthing/documents";
         devices = [ "pixel6a" "ttschnz" ];
