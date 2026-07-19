@@ -40,6 +40,8 @@ zfs create -o com.sun:auto-snapshot=false "$POOL/backup"
 zfs create -o com.sun:auto-snapshot=false "$POOL/services"
 zfs create -o com.sun:auto-snapshot=false "$POOL/services/immich"
 zfs create -o com.sun:auto-snapshot=false "$POOL/services/beszel"
+zfs create -o com.sun:auto-snapshot=false "$POOL/services/radicale"
+
 
 chown "$USER:$GROUP" /data/tim /data/shared /data/backup
 chown "immich:immich" /data/services/immich
