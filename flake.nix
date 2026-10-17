@@ -96,7 +96,7 @@
           ./castor/services/radicale.nix
           ./castor/services/beszel.nix
           ./castor/services/hdd-pool-power.nix
-          ./castor/services/eink-display.nix
+          ./castor/services/static-web.nix
         ];
       };
       
