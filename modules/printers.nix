@@ -9,13 +9,16 @@
     pkgs.brgenml1lpr
     pkgs.brgenml1cupswrapper
     pkgs.canon-cups-ufr2 # Canon printers
+    pkgs.hplip
   ];
 
   # SANE (Scanner Access Now Easy)
   hardware.sane.enable = true;
-  hardware.sane.extraBackends = [ pkgs.sane-airscan ];
+  hardware.sane.extraBackends = [ 
+    pkgs.sane-airscan  
+    pkgs.hplipWithPlugin 
+  ];
   hardware.sane.brscan4.enable = true;
-
 
   hardware.printers = {
     ensurePrinters = [
